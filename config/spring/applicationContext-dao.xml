@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"  
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+       xmlns:aop="http://www.springframework.org/schema/aop"  
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="  
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd  
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd  
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd"
+        >
+       <context:property-placeholder location="classpath:db.properties"></context:property-placeholder>
+       <!-- 连接池配置 -->
+       <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        	<property name="driverClass" value="${jdbc.driver}"></property>
+        	<property name="jdbcUrl" value="${jdbc.url}"></property>
+        	<property name="user" value="${jdbc.username}"></property>
+        	<property name="password" value="${jdbc.password}"></property>
+        	<property name="maxPoolSize" value="25"></property>    
+    		<property name="minPoolSize" value="10"></property>  
+    		<property name="initialPoolSize" value="15"></property>   
+
+       </bean>
+       
+       <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+             <!-- 加载mybatis的配置文件 -->
+             <property name ="configLocation" value="classpath:mybatis/SqlMapConfig.xml"></property>
+             <!-- 加载数据源 -->
+             <property name="dataSource" ref="dataSource"/>
+       </bean>
+       <!-- mapper扫描器,自动创建bean-->
+       <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+            <property name="basePackage" value="priv.MyBlog.mapper"></property>
+            <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+       </bean>
+       
+       <!-- 配置mybatis的ehcache -->
+       <bean id="ehCacheManager"  
+        class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">  
+        <property name="configLocation" value="classpath:ehcache.xml" />  
+        <property name="shared" value="true"></property> <!-- 这里是关键！！！没有必错  -->  
+    </bean>  
+</beans>
+       

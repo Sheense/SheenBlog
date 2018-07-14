@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="priv.MyBlog.mapper.StudynoteMapper">
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache" >
+ 		<property name="timeToIdleSeconds" value="3600"/>
+ 		<property name="timeToLiveSeconds" value="3600"/>
+ 		<!-- 同ehcache参数maxElementsInMemory -->
+		 <property name="maxEntriesLocalHeap" value="1000"/>
+ 		<!-- 同ehcache参数maxElementsOnDisk -->
+ 		<property name="maxEntriesLocalDisk" value="10000000"/>
+ 		<property name="memoryStoreEvictionPolicy" value="LRU"/>
+ 	</cache>
+ 	<select id="selectStudynote" resultType="priv.MyBlog.po.StudynoteCustom">
+ 			select id,simplepic,title,introduction,author,time,nkeys,scannum,type from studynote
+ 	</select>
+ 	
+ 	<select id="selectStudynoteAll" parameterType="int" resultType="priv.MyBlog.po.StudynoteCustom">
+ 			select id,simplepic,title,introduction,author,time,nkeys,scannum,type,content from studynote where id=#{value}
+ 	</select>
+ 	
+ 	<delete id="deleteStudynoteAll" parameterType="int">
+ 			delete from studynote where id = #{value}
+ 	</delete>
+    
+    <update id="updateStudynote" parameterType="priv.MyBlog.po.StudynoteCustom">
+    		update studynote set title = #{title},type=#{type},content=#{content},introduction=#{introduction},author=#{author},nkeys=#{nkeys}
+    		where id=#{id}
+    </update>
+    
+    <insert id="insertStudynote" parameterType="priv.MyBlog.po.Studynote">
+    		insert into studynote(content,title,type,introduction,author,time,nkeys,simplepic) values(#{content},#{title},#{type},#{introduction},#{author},#{time},#{nkeys},#{simplepic})
+    </insert>
+    
+    <update id="addScanNum" parameterType="int">
+    		update studynote set scannum=scannum+1 where id=#{value}
+    </update>
+ </mapper>

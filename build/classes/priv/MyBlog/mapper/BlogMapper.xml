@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="priv.MyBlog.mapper.BlogMapper">
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache" >
+ 		<property name="timeToIdleSeconds" value="3600"/>
+ 		<property name="timeToLiveSeconds" value="3600"/>
+ 		<!-- 同ehcache参数maxElementsInMemory -->
+		 <property name="maxEntriesLocalHeap" value="1000"/>
+ 		<!-- 同ehcache参数maxElementsOnDisk -->
+ 		<property name="maxEntriesLocalDisk" value="10000000"/>
+ 		<property name="memoryStoreEvictionPolicy" value="LRU"/>
+ 	</cache>
+    <sql id="search_type_bkey">
+          <if test="blogCustom.type!=null and blogCustom.type!=''">
+               and type='${blogCustom.type}'
+          </if>
+          <if test="blogCustom.bkey!=null ">
+               and bkey Like '%${blogCustom.bkey}%' || title  Like '%${blogCustom.bkey}%'
+          </if>
+    </sql>
+    <sql id="order_by_desc">
+         order by id desc 
+    </sql>
+    
+	<select id="selectBlogAtPart" resultType="priv.MyBlog.po.BlogCustom" parameterType="priv.MyBlog.po.BlogCustom">
+	     select ID,pic,Author,Fromwhere,Title,introduction,Time,ScanNum,Type from blog
+	     <where>
+	         <include refid="search_type_bkey"></include>
+	     </where>
+	     <include refid="order_by_desc"></include>
+	</select>
+	
+	<select id="selectBlogAll" resultType="priv.MyBlog.po.BlogCustom" parameterType="int">
+	         select * from blog where id = #{value} 
+	</select>
+	<insert id="writeBlog" parameterType="priv.MyBlog.po.Blog">
+	         insert into blog(Title,Time,Fromwhere,bkey,Author,Content,Type,pic,introduction) values (#{title},#{time},#{fromwhere},#{bkey},#{author},#{content},#{type},#{pic},#{introduction}) 
+	</insert>
+	<select id="selectAllType" resultType="priv.MyBlog.po.BlogCustom">
+	       	  select DISTINCT Type from blog     
+	</select>
+	<select id="selectRinkList"  resultType="priv.MyBlog.po.BlogCustom">
+			select id,title,type from blog order by scanNum desc
+	</select>
+	<delete id="deleteBlog" parameterType="int">
+			delete from blog where id=#{value}
+	</delete>
+	<update id="updateBlog" parameterType="priv.MyBlog.po.BlogCustom">
+			update blog set content=#{content},title=#{title},type=#{type},author=#{author},introduction=#{introduction},bkey=#{bkey} where id= #{id}
+	</update>
+	<update id="addScanNum" parameterType="int">
+	        update blog set scannum=scannum+1 where id = #{value}
+	</update>
+</mapper>

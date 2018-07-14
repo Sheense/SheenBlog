@@ -1,0 +1,10 @@
+@charset "gb2312";
+.login{
+	text-align:right;
+	color:blue;
+	font-size:15px;
+}
+.login a{
+	font-family:"ËÎÌו";
+	font-weight: bold;
+}
